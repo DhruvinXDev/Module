@@ -9,7 +9,7 @@ import { Footer } from "@/components/footer"
 
 export function HomePage() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="relative min-h-screen bg-background text-foreground">
       {/* Content */}
       <div className="relative z-10">
         <Navigation />

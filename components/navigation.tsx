@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { NotificationDropdown } from "./notification-dropdown"
+import { useTheme } from "next-themes";
+import { Switch } from "@/components/ui/switch";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -56,6 +58,8 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
             <NotificationDropdown />
 
             <div className="h-6 w-px bg-slate-200 mx-2"></div>
@@ -161,4 +165,23 @@ export function Navigation() {
       </div>
     </nav>
   )
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <div className="flex items-center space-x-2">
+      <span className="text-xs text-slate-500">🌞</span>
+      <Switch
+        checked={isDark}
+        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+        aria-label="Toggle dark mode"
+      />
+      <span className="text-xs text-slate-500">🌙</span>
+    </div>
+  );
 }

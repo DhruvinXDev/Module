@@ -67,7 +67,7 @@ const stats = [
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <GradientBackground />
       <Navigation />
 
@@ -79,7 +79,7 @@ export function AboutPage() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="animate-in fade-in-0 slide-in-from-top-4 duration-1000">
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                <span className="text-slate-900">Building the </span>
+                <span className="text-foreground">Building the </span>
                 <span
                   className="relative inline-block bg-gradient-to-r from-blue-800 via-blue-600 to-purple-600 bg-clip-text text-transparent animate-gradient-flow"
                   style={{ backgroundSize: "200% 200%" }}
@@ -87,9 +87,9 @@ export function AboutPage() {
                   Future
                 </span>
                 <br />
-                <span className="text-slate-900">Together</span>
+                <span className="text-foreground">Together</span>
               </h1>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 We're on a mission to empower developers with the tools and components they need to build exceptional
                 web experiences faster than ever before.
               </p>
@@ -98,30 +98,30 @@ export function AboutPage() {
         </section>
 
         {/* Mission Section */}
-        <section className="py-20 bg-slate-50">
+        <section className="py-20 bg-muted">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="animate-in fade-in-0 slide-in-from-left-8 duration-1000">
-                <h2 className="text-4xl font-bold text-slate-900 mb-6">Our Mission</h2>
-                <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                <h2 className="text-4xl font-bold text-foreground mb-6">Our Mission</h2>
+                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                   We believe that great software should be accessible to everyone. That's why we're building the most
                   comprehensive library of React components, designed to help developers create beautiful, functional
                   applications without starting from scratch.
                 </p>
-                <p className="text-lg text-slate-600 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   From startups to enterprise companies, our tools are trusted by developers worldwide to deliver
                   exceptional user experiences that drive business results.
                 </p>
               </div>
 
               <div className="animate-in fade-in-0 slide-in-from-right-8 duration-1000 delay-300">
-                <Card className="bg-white shadow-lg border-slate-200 hover:shadow-xl transition-all duration-300">
+                <Card className="bg-background shadow-lg border-border hover:shadow-xl transition-all duration-300">
                   <CardContent className="p-8">
                     <div className="grid grid-cols-2 gap-8">
                       {stats.map((stat, index) => (
                         <div key={index} className="text-center">
                           <div className="text-3xl font-bold text-blue-600 mb-2">{stat.number}</div>
-                          <div className="text-slate-600 font-medium">{stat.label}</div>
+                          <div className="text-muted-foreground font-medium">{stat.label}</div>
                         </div>
                       ))}
                     </div>
@@ -136,8 +136,8 @@ export function AboutPage() {
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
-              <h2 className="text-4xl font-bold text-slate-900 mb-6">Our Values</h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-foreground mb-6">Our Values</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 These principles guide everything we do, from the code we write to the community we build.
               </p>
             </div>
@@ -146,15 +146,15 @@ export function AboutPage() {
               {values.map((value, index) => (
                 <Card
                   key={index}
-                  className="bg-white shadow-lg border-slate-200 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-8 duration-1000"
+                  className="bg-background shadow-lg border-border hover:shadow-xl hover:scale-105 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-8 duration-1000"
                   style={{ animationDelay: `${index * 200}ms` }}
                 >
                   <CardContent className="p-8 text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
                       <value.icon className="h-8 w-8 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">{value.title}</h3>
-                    <p className="text-slate-600 leading-relaxed">{value.description}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-4">{value.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{value.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -163,11 +163,11 @@ export function AboutPage() {
         </section>
 
         {/* Team Section */}
-        <section className="py-20 bg-slate-50">
+        <section className="py-20 bg-muted">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
-              <h2 className="text-4xl font-bold text-slate-900 mb-6">Meet Our Team</h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-foreground mb-6">Meet Our Team</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 The passionate individuals behind NexaUI, working tirelessly to make development better for everyone.
               </p>
             </div>
@@ -176,7 +176,7 @@ export function AboutPage() {
               {team.map((member, index) => (
                 <Card
                   key={index}
-                  className="bg-white shadow-lg border-slate-200 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-8 duration-1000"
+                  className="bg-background shadow-lg border-border hover:shadow-xl hover:scale-105 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-8 duration-1000"
                   style={{ animationDelay: `${index * 200}ms` }}
                 >
                   <CardContent className="p-8 text-center">
@@ -188,9 +188,9 @@ export function AboutPage() {
                       />
                       <div className="absolute inset-0 w-20 h-20 rounded-full mx-auto bg-gradient-to-br from-blue-400/20 to-purple-600/20 animate-pulse" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">{member.name}</h3>
+                    <h3 className="text-xl font-bold text-foreground mb-2">{member.name}</h3>
                     <p className="text-blue-600 font-medium mb-4">{member.role}</p>
-                    <p className="text-slate-600 text-sm leading-relaxed">{member.description}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{member.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -210,7 +210,7 @@ export function AboutPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   size="lg"
-                  className="bg-white text-blue-600 hover:bg-blue-50 font-medium px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-background text-blue-600 hover:bg-blue-50 font-medium px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                   asChild
                 >
                   <a href="/signup">
@@ -221,7 +221,7 @@ export function AboutPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-blue-600 font-medium px-8 py-4 rounded-xl transition-all duration-300 bg-transparent"
+                  className="border-background text-white hover:bg-background hover:text-blue-600 font-medium px-8 py-4 rounded-xl transition-all duration-300 bg-transparent"
                 >
                   View Documentation
                 </Button>

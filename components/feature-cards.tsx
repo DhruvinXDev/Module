@@ -55,20 +55,19 @@ const features = [
 
 export function FeatureCards() {
   return (
-    <section id="features" className="py-20 px-6 bg-white/50">
+    <section id="features" className="py-20 px-6 bg-background text-foreground">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-200 text-sm font-medium mb-6">
             <Zap className="h-4 w-4 mr-2" />
             Powerful Features
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Why Choose{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">NexaUI</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+            Why Choose <span className="text-blue-600">NexaUI</span>
           </h2>
 
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Everything you need to build modern, beautiful, and performant web applications with confidence.
           </p>
         </div>
@@ -77,16 +76,16 @@ export function FeatureCards() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className={`group p-8 rounded-2xl ${feature.bgColor} border ${feature.borderColor} hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer`}
+              className={`group p-8 rounded-2xl ${feature.bgColor} border ${feature.borderColor} dark:bg-slate-800 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} ${feature.borderColor} border mb-6`}>
+              <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} ${feature.borderColor} dark:bg-slate-900 dark:border-slate-700 border mb-6`}>
                 <feature.icon className={`h-6 w-6 ${feature.color}`} />
               </div>
 
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-3">{feature.title}</h3>
 
-              <p className="text-slate-600 leading-relaxed">{feature.description}</p>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>

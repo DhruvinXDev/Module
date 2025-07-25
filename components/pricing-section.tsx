@@ -56,20 +56,20 @@ const pricingPlans = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-20 px-6 bg-slate-50">
+    <section id="pricing" className="py-20 px-6 bg-background text-foreground">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-200 text-sm font-medium mb-6">
             <Star className="h-4 w-4 mr-2" />
             Simple, Transparent Pricing
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
             Choose Your{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               Perfect Plan
             </span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Start free and scale as you grow. No hidden fees, cancel anytime.
           </p>
         </div>
@@ -78,23 +78,23 @@ export function PricingSection() {
           {pricingPlans.map((plan, index) => (
             <div
               key={plan.name}
-              className={`relative p-8 rounded-2xl bg-white border transition-all duration-300 hover:scale-105 cursor-pointer shadow-sm hover:shadow-lg ${
-                plan.popular ? "border-blue-200 ring-2 ring-blue-100" : "border-slate-200"
+              className={`relative p-8 rounded-2xl bg-background border transition-all duration-300 hover:scale-105 cursor-pointer shadow-sm hover:shadow-lg ${
+                plan.popular ? "border-blue-200 ring-2 ring-blue-100" : "border-slate-200 dark:border-slate-700"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 dark:bg-blue-400 text-white dark:text-slate-900 px-4 py-1 rounded-full text-sm font-medium">
                   Most Popular
                 </div>
               )}
 
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                <p className="text-slate-600 text-sm mb-4">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{plan.name}</h3>
+                <p className="text-slate-600 dark:text-slate-300 text-sm mb-4">{plan.description}</p>
 
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
-                  {plan.price !== "Free" && <span className="text-slate-500 ml-2">/{plan.period}</span>}
+                  <span className="text-4xl font-bold text-slate-900 dark:text-slate-100">{plan.price}</span>
+                  {plan.price !== "Free" && <span className="text-slate-500 dark:text-slate-400 ml-2">/{plan.period}</span>}
                 </div>
               </div>
 

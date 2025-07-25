@@ -48,20 +48,20 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-slate-900 text-white">
+    <footer className="bg-slate-800 border-t-4 border-blue-500 text-white">
       <div className="container mx-auto px-6 py-16">
         {/* Newsletter Section */}
         <div className="text-center mb-16">
-          <h3 className="text-3xl font-bold mb-4">Stay Updated</h3>
+          <h3 className="text-3xl font-bold mb-4 text-white">Stay Updated</h3>
           <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
             Get the latest updates, tutorials, and announcements delivered straight to your inbox.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <Input
               placeholder="Enter your email"
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Subscribe</Button>
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white">Subscribe</Button>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export function Footer() {
                 <a
                   key={social.name}
                   href={social.href}
-                  className={`text-slate-400 ${social.color} transition-colors duration-200`}
+                  className={`text-slate-400 hover:text-blue-400 transition-colors duration-200`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -99,7 +99,7 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-slate-400 hover:text-white transition-colors duration-200">
+                  <a href={link.href} className="text-slate-400 hover:text-blue-400 transition-colors duration-200">
                     {link.name}
                   </a>
                 </li>
@@ -113,7 +113,7 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-slate-400 hover:text-white transition-colors duration-200">
+                  <a href={link.href} className="text-slate-400 hover:text-blue-400 transition-colors duration-200">
                     {link.name}
                   </a>
                 </li>
@@ -127,7 +127,7 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-slate-400 hover:text-white transition-colors duration-200">
+                  <a href={link.href} className="text-slate-400 hover:text-blue-400 transition-colors duration-200">
                     {link.name}
                   </a>
                 </li>
@@ -141,7 +141,7 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-slate-400 hover:text-white transition-colors duration-200">
+                  <a href={link.href} className="text-slate-400 hover:text-blue-400 transition-colors duration-200">
                     {link.name}
                   </a>
                 </li>
@@ -151,7 +151,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-800">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-700">
           <div className="flex items-center space-x-2 text-slate-400 mb-4 md:mb-0">
             <span>© 2024 NexaUI. Made with</span>
             <Heart className="h-4 w-4 text-red-500" />
@@ -162,7 +162,7 @@ export function Footer() {
             variant="ghost"
             size="sm"
             onClick={scrollToTop}
-            className="text-slate-400 hover:text-white hover:bg-slate-800"
+            className="text-slate-400 hover:text-blue-400 hover:bg-slate-700"
           >
             <ArrowUp className="h-4 w-4 mr-2" />
             Back to Top

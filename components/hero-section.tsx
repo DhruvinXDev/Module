@@ -16,17 +16,17 @@ export function HeroSection() {
   return (
     <section className="relative py-24 px-6 min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <GradientBackground />
         <AnimatedDots />
       </div>
 
       {/* Subtle geometric shapes */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-xl animate-gentle-float" />
-        <div className="absolute top-40 right-32 w-24 h-24 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-xl animate-gentle-float animation-delay-1000" />
-        <div className="absolute bottom-32 left-40 w-40 h-40 bg-gradient-to-br from-cyan-200/20 to-blue-200/20 rounded-full blur-xl animate-gentle-float animation-delay-2000" />
-        <div className="absolute bottom-20 right-20 w-28 h-28 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-xl animate-gentle-float animation-delay-1500" />
+        <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full blur-xl animate-gentle-float" />
+        <div className="absolute top-40 right-32 w-24 h-24 bg-gradient-to-br from-purple-200/20 to-pink-200/20 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full blur-xl animate-gentle-float animation-delay-1000" />
+        <div className="absolute bottom-32 left-40 w-40 h-40 bg-gradient-to-br from-cyan-200/20 to-blue-200/20 dark:from-cyan-900/30 dark:to-blue-900/30 rounded-full blur-xl animate-gentle-float animation-delay-2000" />
+        <div className="absolute bottom-20 right-20 w-28 h-28 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full blur-xl animate-gentle-float animation-delay-1500" />
       </div>
 
       {/* Floating particles */}
@@ -55,29 +55,15 @@ export function HeroSection() {
             isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
           }`}
         >
-          <span className="text-slate-900">Build the </span>
-          <span
-            className="relative inline-block"
-            style={{
-              background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #7c3aed 100%)",
-              backgroundSize: "200% 200%",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              animation: "gradient-flow 6s ease infinite",
-              textShadow: "0 0 40px rgba(59, 130, 246, 0.3)",
-            }}
-          >
-            Future
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg blur-lg animate-pulse" />
-          </span>
+          <span className="text-slate-900 dark:text-slate-100">Build the </span>
+          <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Future</span>
           <br />
-          <span className="text-slate-900">of Web Development</span>
+          <span className="text-slate-900 dark:text-slate-100">of Web Development</span>
         </h1>
 
         {/* Subtitle */}
         <p
-          className={`text-xl text-slate-700 max-w-3xl mx-auto mb-12 leading-relaxed transition-all duration-1000 delay-500 ${
+          className={`text-xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto mb-12 leading-relaxed transition-all duration-1000 delay-500 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >

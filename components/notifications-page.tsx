@@ -211,18 +211,18 @@ export function NotificationsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Premium Header */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8 mb-8">
+        <div className="bg-background/80 backdrop-blur-xl rounded-3xl shadow-xl border border-background/20 p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-6">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 p-3 rounded-2xl transition-all duration-300 hover:scale-105"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted p-3 rounded-2xl transition-all duration-300 hover:scale-105"
                 asChild
               >
                 <a href="/">
@@ -230,7 +230,7 @@ export function NotificationsPage() {
                 </a>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 flex items-center space-x-4">
+                <h1 className="text-3xl font-bold text-foreground flex items-center space-x-4">
                   <div className="p-3 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-lg">
                     <Bell className="h-7 w-7 text-white" />
                   </div>
@@ -249,7 +249,7 @@ export function NotificationsPage() {
                     )}
                   </div>
                 </h1>
-                <p className="text-slate-600 mt-2 text-lg">
+                <p className="text-muted-foreground mt-2 text-lg">
                   Stay updated with your latest activity and important updates
                 </p>
               </div>
@@ -261,7 +261,7 @@ export function NotificationsPage() {
                   variant="outline"
                   size="sm"
                   onClick={markAllAsRead}
-                  className="text-blue-600 border-blue-200 hover:bg-blue-50 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50 bg-background/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   Mark all read
@@ -271,7 +271,7 @@ export function NotificationsPage() {
                 variant="outline"
                 size="sm"
                 onClick={deleteAllRead}
-                className="text-red-600 border-red-200 hover:bg-red-50 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                className="text-red-600 border-red-200 hover:bg-red-50 bg-background/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Clear read
@@ -282,17 +282,17 @@ export function NotificationsPage() {
           {/* Enhanced Search */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 placeholder="Search notifications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 bg-white/70 backdrop-blur-sm border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-blue-200 rounded-2xl text-base"
+                className="pl-12 pr-4 py-3 bg-background focus:bg-background focus:border-blue-300 focus:ring-blue-200 rounded-2xl text-base"
               />
             </div>
             <Button
               variant="outline"
-              className="px-6 py-3 bg-white/70 backdrop-blur-sm border-slate-200 hover:bg-white rounded-2xl font-medium transition-all duration-300 hover:scale-105"
+              className="px-6 py-3 bg-background focus:bg-background rounded-2xl font-medium transition-all duration-300 hover:scale-105"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -302,8 +302,8 @@ export function NotificationsPage() {
 
         {/* Enhanced Tabs */}
         <Tabs defaultValue="all" value={selectedTab} onValueChange={setSelectedTab}>
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
-            <TabsList className="w-full justify-start bg-gradient-to-r from-slate-50/80 to-slate-100/80 border-b border-slate-200/50 rounded-none p-2">
+          <div className="bg-background/80 backdrop-blur-xl rounded-3xl shadow-xl border border-background/20 overflow-hidden">
+            <TabsList className="w-full justify-start bg-muted/80 border-b border-border/50 rounded-none p-2">
               <TabsTrigger value="all" className="px-6 py-3 rounded-2xl font-medium transition-all duration-300">
                 All ({notifications.length})
               </TabsTrigger>
@@ -327,18 +327,18 @@ export function NotificationsPage() {
             <TabsContent value={selectedTab} className="m-0">
               {filteredNotifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="p-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl mb-6 shadow-inner">
-                    <Bell className="h-12 w-12 text-slate-400" />
+                  <div className="p-8 bg-muted rounded-3xl mb-6 shadow-inner">
+                    <Bell className="h-12 w-12 text-muted-foreground" />
                   </div>
-                  <h3 className="font-bold text-slate-700 mb-3 text-xl">No notifications found</h3>
-                  <p className="text-slate-500 text-base max-w-md leading-relaxed">
+                  <h3 className="font-bold text-muted-foreground mb-3 text-xl">No notifications found</h3>
+                  <p className="text-xs text-muted-foreground mt-4">
                     {searchTerm
                       ? "Try adjusting your search terms or check different categories"
                       : "You're all caught up! Check back later for new updates and activities."}
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100/50">
+                <div className="divide-y divide-muted/50">
                   {filteredNotifications.map((notification, index) => (
                     <div
                       key={notification.id}
@@ -392,7 +392,7 @@ export function NotificationsPage() {
                               <div className="flex items-center space-x-3 mb-2">
                                 <h3
                                   className={`font-bold text-lg ${
-                                    !notification.read ? "text-slate-900" : "text-slate-700"
+                                    !notification.read ? "text-foreground" : "text-muted-foreground"
                                   }`}
                                 >
                                   {notification.title}
@@ -410,10 +410,10 @@ export function NotificationsPage() {
                                   </div>
                                 )}
                               </div>
-                              <p className="text-slate-600 mb-4 leading-relaxed text-base">{notification.message}</p>
+                              <p className="text-muted-foreground mb-4 leading-relaxed text-base">{notification.message}</p>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-4">
-                                  <div className="flex items-center space-x-2 text-sm text-slate-500">
+                                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                     <Clock className="h-4 w-4" />
                                     <span className="font-medium">{notification.time}</span>
                                   </div>
