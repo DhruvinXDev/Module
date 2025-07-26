@@ -1,30 +1,158 @@
-# Open in v0
+# NexaUI - Full Stack Project
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A modern web application built with Next.js frontend, Node.js backend, and MySQL database.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/dhruvins-projects-4ae4e8e6/v0-open-in-v0)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/ytMydCwG0Jr)
+## 📁 Project Structure
 
-## Overview
+```
+Module/
+├── frontend/          # Next.js React application
+├── backend/           # Node.js Express API
+└── database/          # MySQL schema and migrations
+```
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## 🚀 Quick Start
 
-## Deployment
+### 1. Frontend (Next.js)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend will run on: http://localhost:3000
 
-Your project is live at:
+### 2. Backend (Node.js/Express)
+```bash
+cd backend
+npm install
+cp env.example .env
+# Edit .env with your database credentials
+npm run dev
+```
+Backend will run on: http://localhost:5000
 
-**[https://vercel.com/dhruvins-projects-4ae4e8e6/v0-open-in-v0](https://vercel.com/dhruvins-projects-4ae4e8e6/v0-open-in-v0)**
+### 3. Database (MySQL)
+```bash
+# Connect to MySQL and run schema
+mysql -u root -p
+source database/schema.sql
+```
 
-## Build your app
+## 🛠️ Technology Stack
 
-Continue building your app on:
+### Frontend
+- **Next.js 15** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI components
+- **next-themes** - Dark/light mode
 
-**[https://v0.dev/chat/projects/ytMydCwG0Jr](https://v0.dev/chat/projects/ytMydCwG0Jr)**
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MySQL** - Database
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+- **express-validator** - Input validation
 
-## How It Works
+### Database
+- **MySQL 8.0+** - Relational database
+- **Connection pooling** - Performance optimization
+- **Prepared statements** - Security
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## 🔐 Authentication
+
+The application uses JWT tokens for authentication:
+
+1. **Register**: `POST /api/auth/signup`
+2. **Login**: `POST /api/auth/login`
+3. **Protected routes**: Include `Authorization: Bearer <token>` header
+
+## 📊 Database Schema
+
+- **users** - User accounts and authentication
+- **user_profiles** - Extended user information
+- **notifications** - User notification system
+- **sessions** - JWT token management
+
+## 🌙 Dark/Light Theme
+
+The frontend supports automatic dark/light theme switching with a toggle in the navigation bar.
+
+## 📝 Sample Data
+
+The database includes sample users for testing:
+- Admin: `admin@nexaui.com` / `password123`
+- John Doe: `john@example.com` / `password123`
+- Jane Smith: `jane@example.com` / `password123`
+- Bob Johnson: `bob@example.com` / `password123`
+
+## 🔌 API Endpoints
+
+### Authentication
+- `POST /api/auth/signup` - Register user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user
+
+### Users
+- `GET /api/users` - Get all users (admin)
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user (admin)
+
+### Notifications
+- `GET /api/notifications` - Get user notifications
+- `POST /api/notifications` - Create notification
+- `PUT /api/notifications/:id/read` - Mark as read
+- `DELETE /api/notifications/:id` - Delete notification
+
+### Profile
+- `GET /api/profile` - Get user profile
+- `PUT /api/profile` - Update profile
+- `GET /api/profile/:userId` - Get public profile
+
+## 🚀 Deployment
+
+### Frontend (Vercel/Netlify)
+```bash
+cd frontend
+npm run build
+# Deploy to your preferred platform
+```
+
+### Backend (Railway/Heroku)
+```bash
+cd backend
+# Set environment variables
+npm start
+```
+
+### Database (PlanetScale/AWS RDS)
+- Use the schema in `database/schema.sql`
+- Update connection strings in backend `.env`
+
+## 📚 Documentation
+
+- [Frontend README](frontend/README.md)
+- [Backend README](backend/README.md)
+- [Database Schema](database/schema.sql)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support or questions:
+- Create an issue in the repository
+- Email: support@nexaui.com
+- Documentation: Check individual README files in each folder 
