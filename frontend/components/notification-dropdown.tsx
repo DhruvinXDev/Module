@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bell, Check, Settings, Clock, User, MessageSquare, Heart, Gift, X, ExternalLink, Zap } from "lucide-react"
+import { Bell, Check, Settings, Clock, User, MessageSquare, Heart, Gift, X, ExternalLink, Zap, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useToast } from "@/hooks/use-toast"
 
 interface Notification {
   id: string
@@ -23,102 +24,162 @@ interface Notification {
   priority?: "high" | "medium" | "low"
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "message",
-    title: "Sarah Johnson",
-    message: "Hey! Let's discuss the new project requirements. Are you free tomorrow?",
-    time: "2m",
-    read: false,
-    avatar: "/placeholder-user.jpg",
-    priority: "high",
-  },
-  {
-    id: "2",
-    type: "like",
-    title: "Post Engagement",
-    message: "Alex Chen and 12 others loved your latest design showcase",
-    time: "15m",
-    read: false,
-    priority: "medium",
-  },
-  {
-    id: "3",
-    type: "follow",
-    title: "Emma Wilson",
-    message: "Started following you • UX Designer at TechCorp",
-    time: "1h",
-    read: true,
-    avatar: "/placeholder-user.jpg",
-    priority: "low",
-  },
-  {
-    id: "4",
-    type: "system",
-    title: "Security Alert",
-    message: "Two-factor authentication enabled successfully",
-    time: "2h",
-    read: true,
-    priority: "high",
-  },
-  {
-    id: "5",
-    type: "promotion",
-    title: "Limited Offer",
-    message: "50% off Pro Plan - Only 24 hours left!",
-    time: "1d",
-    read: false,
-    priority: "high",
-  },
-  {
-    id: "6",
-    type: "message",
-    title: "Design Team",
-    message: "You were mentioned in #design-team channel",
-    time: "1d",
-    read: true,
-    priority: "medium",
-  },
-  {
-    id: "7",
-    type: "like",
-    title: "Maria Rodriguez",
-    message: "Liked your comment on responsive design patterns",
-    time: "2d",
-    read: true,
-    priority: "low",
-  },
-  {
-    id: "8",
-    type: "system",
-    title: "Weekly Report",
-    message: "Your activity summary is ready to view",
-    time: "3d",
-    read: false,
-    priority: "low",
-  },
-]
+interface NotificationDropdownProps {
+  onNotificationChange?: () => void;
+}
 
-export function NotificationDropdown() {
-  const [notifications, setNotifications] = React.useState<Notification[]>(mockNotifications)
+export function NotificationDropdown({ onNotificationChange }: NotificationDropdownProps) {
+  const [notifications, setNotifications] = React.useState<Notification[]>([])
   const [isOpen, setIsOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const { toast } = useToast();
+
+  // Fetch notifications from backend
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setNotifications([]);
+        return;
+      }
+
+      const res = await fetch("http://localhost:5001/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // Transform backend data to match frontend format
+        const transformedNotifications = data.notifications.map((notification: any) => ({
+          id: notification.id.toString(),
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          time: formatTime(notification.created_at),
+          read: notification.is_read,
+          priority: notification.priority,
+          avatar: notification.avatar
+        }));
+        setNotifications(transformedNotifications);
+      } else {
+        console.error("Failed to fetch notifications");
+        setNotifications([]);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Format time for display
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
+    return `${Math.floor(diffInMinutes / 1440)}d`;
+  };
+
+  // Fetch notifications when component mounts and when dropdown opens
+  React.useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen]);
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
-    )
-  }
+  const markAsRead = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })))
-  }
+      const res = await fetch(`http://localhost:5001/api/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-  }
+      if (res.ok) {
+        setNotifications((prev) =>
+          prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
+        );
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const deleteNotification = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch(`http://localhost:5001/api/notifications/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
+  const deleteAllRead = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch("http://localhost:5001/api/notifications/delete-read", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        setNotifications((prev) => prev.filter((notification) => !notification.read));
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+        toast({
+          title: "All read notifications cleared",
+          description: "All read notifications have been cleared.",
+        });
+      } else {
+        console.error("Failed to clear all read notifications:", res.status);
+        toast({
+          title: "Error",
+          description: "Failed to clear all read notifications.",
+        });
+      }
+    } catch (error) {
+      console.error("Error clearing all read notifications:", error);
+      toast({
+        title: "Error",
+        description: "Failed to clear all read notifications.",
+      });
+    }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -203,23 +264,115 @@ export function NotificationDropdown() {
               </div>
             )}
           </div>
-
-          {unreadCount > 0 && (
+          <div className="flex gap-2 mt-4">
             <Button
               variant="ghost"
               size="sm"
-              onClick={markAllAsRead}
-              className="mt-4 text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+              onClick={async () => {
+                setLoading(true);
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  toast({ title: "Not logged in", description: "Please log in to use notifications." });
+                  window.location.href = "/login";
+                  setLoading(false);
+                  return;
+                }
+                try {
+                  const res = await fetch("http://localhost:5001/api/notifications/read-all", {
+                    method: "PUT",
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (!res.ok) {
+                    let errorMsg = "Failed to mark all notifications as read.";
+                    if (res.status === 401) {
+                      errorMsg = "Session expired. Please log in again.";
+                      window.location.href = "/login";
+                    } else {
+                      try {
+                        const errData = await res.json();
+                        if (errData && errData.error) errorMsg = errData.error;
+                      } catch {}
+                    }
+                    toast({ title: "Error", description: errorMsg });
+                    throw new Error(errorMsg);
+                  }
+                  setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+                  if (onNotificationChange) onNotificationChange();
+                  toast({ title: "All notifications marked as read", description: "All notifications have been marked as read." });
+                } catch (err) {
+                  // Already handled above
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading || unreadCount === 0}
+              className="text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
             >
               <Check className="h-4 w-4 mr-2" />
               Mark all as read
             </Button>
-          )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                setLoading(true);
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  toast({ title: "Not logged in", description: "Please log in to use notifications." });
+                  window.location.href = "/login";
+                  setLoading(false);
+                  return;
+                }
+                try {
+                  const res = await fetch("http://localhost:5001/api/notifications/delete-read", {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  if (!res.ok) {
+                    let errorMsg = "Failed to clear all read notifications.";
+                    if (res.status === 401) {
+                      errorMsg = "Session expired. Please log in again.";
+                      window.location.href = "/login";
+                    } else {
+                      try {
+                        const errData = await res.json();
+                        if (errData && errData.error) errorMsg = errData.error;
+                      } catch {}
+                    }
+                    toast({ title: "Error", description: errorMsg });
+                    throw new Error(errorMsg);
+                  }
+                  setNotifications((prev) => prev.filter((n) => !n.read));
+                  if (onNotificationChange) onNotificationChange();
+                  toast({ title: "All read notifications cleared", description: "All read notifications have been cleared." });
+                } catch (err) {
+                  // Already handled above
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading || notifications.filter(n => n.read).length === 0}
+              className="text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear all read
+            </Button>
+          </div>
         </div>
 
         {/* Enhanced Notifications List */}
         <ScrollArea className="h-96">
-          {notifications.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="p-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl mb-4 shadow-inner">
+                <Bell className="h-10 w-10 text-slate-400" />
+              </div>
+              <h4 className="font-semibold text-slate-700 mb-2">Loading notifications...</h4>
+              <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
+                Please wait while we fetch your notifications.
+              </p>
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="p-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl mb-4 shadow-inner">
                 <Bell className="h-10 w-10 text-slate-400" />
@@ -355,7 +508,7 @@ export function NotificationDropdown() {
         {notifications.length > 0 && (
           <>
             <DropdownMenuSeparator className="bg-gradient-to-r from-transparent via-slate-200 to-transparent mx-4" />
-            <div className="p-4 bg-gradient-to-r from-slate-50/80 to-slate-100/80 backdrop-blur-sm">
+            <div className="p-4 bg-gradient-to-r from-slate-50/80 to-slate-100/80 backdrop-blur-sm flex flex-col gap-2">
               <Button
                 variant="ghost"
                 className="w-full text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-white/70 backdrop-blur-sm rounded-2xl py-3 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center space-x-2 border border-slate-200/50"

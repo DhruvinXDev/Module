@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "./navigation"
+import { useToast } from "@/hooks/use-toast";
 
 interface Notification {
   id: string
@@ -140,31 +141,130 @@ const mockNotifications: Notification[] = [
   },
 ]
 
-export function NotificationsPage() {
-  const [notifications, setNotifications] = React.useState<Notification[]>(mockNotifications)
+export function NotificationsPage({ notifications: propNotifications, onNotificationChange }: { notifications?: any[], onNotificationChange?: () => void }) {
+  const [notifications, setNotifications] = React.useState<Notification[]>(propNotifications || mockNotifications)
   const [selectedTab, setSelectedTab] = React.useState("all")
   const [searchTerm, setSearchTerm] = React.useState("")
+  const { toast } = useToast();
+  const [loading, setLoading] = React.useState(false);
+
+  const createSampleNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No authentication token found.",
+        });
+        return;
+      }
+
+      const res = await fetch("http://localhost:5001/api/notifications/sample", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Sample notifications created!",
+          description: "Refresh the page to see your new notifications.",
+        });
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+        // Reload the page to show new notifications
+        window.location.reload();
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create sample notifications");
+      }
+    } catch (err: any) {
+      toast({
+        title: "Error creating sample notifications",
+        description: err.message,
+      });
+    }
+  };
 
   const unreadCount = notifications.filter((n) => !n.read).length
   const highPriorityCount = notifications.filter((n) => n.priority === "high" && !n.read).length
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
-    )
-  }
+  const markAsRead = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })))
-  }
+      const res = await fetch(`http://localhost:5001/api/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-  }
+      if (res.ok) {
+        setNotifications((prev) =>
+          prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
+        );
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
 
-  const deleteAllRead = () => {
-    setNotifications((prev) => prev.filter((notification) => !notification.read))
-  }
+  const deleteNotification = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch(`http://localhost:5001/api/notifications/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
+  const deleteAllRead = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch("http://localhost:5001/api/notifications/delete-read", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        setNotifications((prev) => prev.filter((notification) => !notification.read));
+        // Notify parent component about the change
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
+        toast({
+          title: "Read notifications cleared",
+          description: "All read notifications have been deleted.",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting read notifications:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete read notifications.",
+      });
+    }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -255,22 +355,71 @@ export function NotificationsPage() {
               </div>
             </div>
 
+            {/* Remove Mark all read and Clear read buttons from the notifications page */}
             <div className="flex items-center space-x-3">
-              {unreadCount > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={markAllAsRead}
-                  className="text-blue-600 border-blue-200 hover:bg-blue-50 bg-background/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Mark all read
-                </Button>
-              )}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={deleteAllRead}
+                onClick={async () => {
+                  setLoading(true);
+                  const token = localStorage.getItem("token");
+                  console.log("Notification token:", token);
+                  if (!token) {
+                    toast({ title: "Not logged in", description: "Please log in to use notifications." });
+                    window.location.href = "/login";
+                    setLoading(false);
+                    return;
+                  }
+                  try {
+                    const res = await fetch("http://localhost:5001/api/notifications/read-all", {
+                      method: "PUT",
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error("Failed to mark all as read");
+                    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+                    if (onNotificationChange) onNotificationChange();
+                    toast({ title: "All notifications marked as read", description: "All notifications have been marked as read." });
+                  } catch (err) {
+                    toast({ title: "Error", description: "Failed to mark all notifications as read." });
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading || unreadCount === 0}
+                className="text-blue-600 border-blue-200 hover:bg-blue-50 bg-background/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Mark all read
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  setLoading(true);
+                  const token = localStorage.getItem("token");
+                  console.log("Notification token:", token);
+                  if (!token) {
+                    toast({ title: "Not logged in", description: "Please log in to use notifications." });
+                    window.location.href = "/login";
+                    setLoading(false);
+                    return;
+                  }
+                  try {
+                    const res = await fetch("http://localhost:5001/api/notifications/delete-read", {
+                      method: "DELETE",
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (!res.ok) throw new Error("Failed to clear all read");
+                    setNotifications((prev) => prev.filter((n) => !n.read));
+                    if (onNotificationChange) onNotificationChange();
+                    toast({ title: "All read notifications cleared", description: "All read notifications have been cleared." });
+                  } catch (err) {
+                    toast({ title: "Error", description: "Failed to clear all read notifications." });
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading || notifications.filter(n => n.read).length === 0}
                 className="text-red-600 border-red-200 hover:bg-red-50 bg-background/70 backdrop-blur-sm px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
               >
                 <Trash2 className="h-4 w-4 mr-2" />

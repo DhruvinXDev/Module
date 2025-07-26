@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { GradientBackground } from "./gradient-background"
 import { AnimatedDots } from "./animated-dots"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 export function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -17,13 +19,41 @@ export function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate loading
-    setTimeout(() => setIsLoading(false), 2000)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const form = e.target as HTMLFormElement;
+    const full_name = (form.elements.namedItem("name") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ full_name, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Signup failed");
+      // Store token and user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      toast({
+        title: `Welcome, ${data.user.full_name}!`,
+        description: "Your account has been created."
+      });
+      router.push("/");
+    } catch (err: any) {
+      toast({
+        title: "Signup failed",
+        description: err.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getPasswordStrength = (password: string) => {
     let strength = 0

@@ -175,6 +175,16 @@ router.put('/:id', authenticateToken, updateUserValidation, async (req, res) => 
       [userId]
     );
 
+    // Create profile update notification
+    try {
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [userId, 'system', 'Profile Updated', `Your profile information has been updated successfully.`, 'low']
+      );
+    } catch (notificationError) {
+      console.error('Failed to create profile update notification:', notificationError);
+    }
+
     res.json({
       message: 'User updated successfully',
       user: updatedUsers[0]
@@ -182,6 +192,43 @@ router.put('/:id', authenticateToken, updateUserValidation, async (req, res) => 
 
   } catch (error) {
     console.error('Update user error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// @route   DELETE /api/users/me
+// @desc    Delete current user's account
+// @access  Private
+router.delete('/me', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Check if user exists
+    const [existingUsers] = await pool.execute(
+      'SELECT id FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (existingUsers.length === 0) {
+      return res.status(404).json({ 
+        error: 'User not found' 
+      });
+    }
+
+    // Delete user (cascade will handle related records)
+    await pool.execute('DELETE FROM users WHERE id = ?', [userId]);
+
+    // Note: We don't create a notification here since the user account is being deleted
+    // But we could log this action for admin purposes
+
+    res.json({
+      message: 'Account deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete account error:', error);
     res.status(500).json({ 
       error: 'Internal server error' 
     });

@@ -18,27 +18,31 @@ import {
   Phone,
   MapPin,
   Calendar,
-  Activity,
-  Award,
-  Star,
   Clock,
-  CheckCircle,
-  Sparkles
+  Sparkles,
+  Settings,
+  Trash2,
+  AlertTriangle,
+  Shield,
+  Key
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Navigation } from "@/components/navigation";
+import { useRouter } from "next/navigation";
 
-const Profile = () => {
+const Profile = ({ profile }: { profile?: any }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [profileData, setProfileData] = useState({
-    firstName: "John",
-    lastName: "Doe", 
-    email: "john@example.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-    bio: "Full-stack developer passionate about creating amazing user experiences."
+    firstName: profile?.full_name?.split(' ')[0] || "John",
+    lastName: profile?.full_name?.split(' ').slice(1).join(' ') || "Doe",
+    email: profile?.email || "john@example.com",
+    phone: profile?.phone || "+1 (555) 123-4567",
+    location: profile?.location || "San Francisco, CA",
+    bio: profile?.bio || "Full-stack developer passionate about creating amazing user experiences."
   });
   const { toast } = useToast();
+  const router = useRouter();
 
   const activityHistory = [
     { action: "Profile updated", time: "2 hours ago", type: "edit" },
@@ -47,18 +51,52 @@ const Profile = () => {
     { action: "Email verified", time: "30 days ago", type: "verification" },
   ];
 
-  const achievements = [
-    { title: "Early Adopter", description: "Joined in the first month", icon: Award },
-    { title: "Profile Complete", description: "100% profile completion", icon: CheckCircle },
-    { title: "Active User", description: "30+ days active", icon: Activity },
-  ];
-
   const handleSave = () => {
     setIsEditing(false);
     toast({
       title: "Profile updated!",
       description: "Your changes have been saved successfully.",
     });
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "No authentication token found.",
+        });
+        return;
+      }
+
+      const res = await fetch("http://localhost:5001/api/users/me", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        // Clear local storage
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        
+        toast({
+          title: "Account deleted successfully!",
+          description: "Your account has been permanently deleted.",
+        });
+        
+        // Redirect to home page
+        router.push("/");
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete account");
+      }
+    } catch (err: any) {
+      toast({
+        title: "Error deleting account",
+        description: err.message,
+      });
+    }
   };
 
   return (
@@ -78,7 +116,7 @@ const Profile = () => {
           <TabsList className="grid w-full grid-cols-3 animate-fade-in bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
             <TabsTrigger value="profile">Profile Info</TabsTrigger>
             <TabsTrigger value="history">Activity History</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
@@ -237,23 +275,78 @@ const Profile = () => {
             </Card>
           </TabsContent>
 
-          {/* Achievements Tab */}
-          <TabsContent value="achievements" className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {achievements.map((achievement, index) => {
-                const Icon = achievement.icon;
-                return (
-                  <Card key={index} className="group cursor-pointer bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <CardHeader className="text-center">
-                      <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:scale-110 transition-all duration-300">
-                        <Icon className="h-8 w-8 text-white" />
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Security Settings */}
+              <Card className="bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-slate-800 dark:text-slate-100">
+                    <Shield className="mr-2 h-5 w-5" />
+                    Security Settings
+                  </CardTitle>
+                  <CardDescription className="text-slate-500 dark:text-slate-400">Manage your account security</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Key className="mr-2 h-4 w-4" />
+                    Change Password
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Two-Factor Authentication
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Privacy Settings
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Danger Zone */}
+              <Card className="bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-red-200 dark:border-red-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-red-600 dark:text-red-400">
+                    <AlertTriangle className="mr-2 h-5 w-5" />
+                    Danger Zone
+                  </CardTitle>
+                  <CardDescription className="text-slate-500 dark:text-slate-400">Irreversible and destructive actions</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {!showDeleteConfirm ? (
+                    <Button 
+                      variant="destructive" 
+                      className="w-full justify-start"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Account
+                    </Button>
+                  ) : (
+                    <div className="space-y-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
+                      <p className="text-sm text-red-700 dark:text-red-300">
+                        Are you sure? This action cannot be undone. This will permanently delete your account and all associated data.
+                      </p>
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={handleDeleteAccount}
+                        >
+                          Yes, Delete Account
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => setShowDeleteConfirm(false)}
+                        >
+                          Cancel
+                        </Button>
                       </div>
-                      <CardTitle className="group-hover:text-blue-600 dark:group-hover:text-blue-400 text-slate-800 dark:text-slate-100 transition-colors">{achievement.title}</CardTitle>
-                      <CardDescription className="text-slate-500 dark:text-slate-400">{achievement.description}</CardDescription>
-                    </CardHeader>
-                  </Card>
-                );
-              })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>

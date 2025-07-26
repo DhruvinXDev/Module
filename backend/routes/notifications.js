@@ -129,6 +129,127 @@ router.post('/', authenticateToken, createNotificationValidation, async (req, re
   }
 });
 
+// @route   PUT /api/notifications/read-all
+// @desc    Mark all notifications as read
+// @access  Private
+router.put('/read-all', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log('🔍 [DEBUG] /read-all - User ID:', userId);
+    console.log('🔍 [DEBUG] /read-all - User object:', req.user);
+
+    // Mark all notifications as read
+    const [result] = await pool.execute(
+      'UPDATE notifications SET is_read = TRUE WHERE user_id = ?',
+      [userId]
+    );
+    
+    console.log('🔍 [DEBUG] /read-all - Update result:', result);
+
+    res.json({
+      message: 'All notifications marked as read',
+      affectedRows: result.affectedRows
+    });
+
+  } catch (error) {
+    console.error('Mark all notifications as read error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// @route   DELETE /api/notifications/delete-read
+// @desc    Delete all read notifications
+// @access  Private
+router.delete('/delete-read', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log('🔍 [DEBUG] /delete-read - User ID:', userId);
+    console.log('🔍 [DEBUG] /delete-read - User object:', req.user);
+
+    // Delete all read notifications
+    const [result] = await pool.execute(
+      'DELETE FROM notifications WHERE user_id = ? AND is_read = TRUE',
+      [userId]
+    );
+    
+    console.log('🔍 [DEBUG] /delete-read - Delete result:', result);
+
+    res.json({
+      message: `${result.affectedRows} read notifications deleted successfully`
+    });
+
+  } catch (error) {
+    console.error('Delete read notifications error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// @route   POST /api/notifications/sample
+// @desc    Create sample notifications for testing
+// @access  Private
+router.post('/sample', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Sample notifications for demonstration
+    const sampleNotifications = [
+      {
+        type: 'message',
+        title: 'New Message from Sarah',
+        message: 'Hey! I wanted to discuss the new project requirements. Are you free tomorrow?',
+        priority: 'high'
+      },
+      {
+        type: 'like',
+        title: 'Your post is trending!',
+        message: 'Alex Chen and 12 others loved your latest design showcase. Great work!',
+        priority: 'medium'
+      },
+      {
+        type: 'follow',
+        title: 'Emma Wilson started following you',
+        message: 'Emma Wilson started following you. She\'s a Senior UX Designer at TechCorp.',
+        priority: 'low'
+      },
+      {
+        type: 'system',
+        title: 'Weekly Activity Report',
+        message: 'Your weekly activity report is ready. You\'ve completed 15 tasks this week.',
+        priority: 'medium'
+      },
+      {
+        type: 'promotion',
+        title: 'Limited Time Offer - 50% off Pro Plan',
+        message: 'Upgrade to NexaUI Pro today and get 50% off for the first 3 months!',
+        priority: 'high'
+      }
+    ];
+
+    // Create sample notifications
+    for (const notification of sampleNotifications) {
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [userId, notification.type, notification.title, notification.message, notification.priority]
+      );
+    }
+
+    res.json({
+      message: 'Sample notifications created successfully',
+      count: sampleNotifications.length
+    });
+
+  } catch (error) {
+    console.error('Create sample notifications error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error' 
+    });
+  }
+});
+
 // @route   GET /api/notifications/:id
 // @desc    Get a specific notification
 // @access  Private
@@ -285,56 +406,6 @@ router.put('/:id/read', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Mark notification as read error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error' 
-    });
-  }
-});
-
-// @route   PUT /api/notifications/read-all
-// @desc    Mark all notifications as read
-// @access  Private
-router.put('/read-all', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    // Mark all notifications as read
-    await pool.execute(
-      'UPDATE notifications SET is_read = TRUE WHERE user_id = ?',
-      [userId]
-    );
-
-    res.json({
-      message: 'All notifications marked as read'
-    });
-
-  } catch (error) {
-    console.error('Mark all notifications as read error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error' 
-    });
-  }
-});
-
-// @route   DELETE /api/notifications/delete-read
-// @desc    Delete all read notifications
-// @access  Private
-router.delete('/delete-read', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    // Delete all read notifications
-    const [result] = await pool.execute(
-      'DELETE FROM notifications WHERE user_id = ? AND is_read = TRUE',
-      [userId]
-    );
-
-    res.json({
-      message: `${result.affectedRows} read notifications deleted successfully`
-    });
-
-  } catch (error) {
-    console.error('Delete read notifications error:', error);
     res.status(500).json({ 
       error: 'Internal server error' 
     });

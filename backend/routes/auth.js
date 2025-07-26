@@ -70,6 +70,28 @@ router.post('/signup', signupValidation, async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
+    // Create welcome notification
+    try {
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [newUser[0].id, 'system', 'Welcome to NexaUI!', `Welcome ${newUser[0].full_name}! Your account has been created successfully.`, 'high']
+      );
+      
+      // Add setup notification
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [newUser[0].id, 'promotion', 'Complete Your Profile', `Welcome! Complete your profile to get the most out of NexaUI. Add your bio, location, and profile picture.`, 'medium']
+      );
+      
+      // Add security notification
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [newUser[0].id, 'system', 'Security Setup', `For better security, consider enabling two-factor authentication in your account settings.`, 'medium']
+      );
+    } catch (notificationError) {
+      console.error('Failed to create welcome notification:', notificationError);
+    }
+
     res.status(201).json({
       message: 'User registered successfully',
       user: newUser[0],
@@ -128,6 +150,22 @@ router.post('/login', loginValidation, async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
+
+    // Create login notification
+    try {
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [user.id, 'system', 'Login Successful', `Welcome back ${user.full_name}! You have successfully logged in.`, 'medium']
+      );
+      
+      // Add activity notification
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
+        [user.id, 'system', 'Account Activity', `Your account was accessed from a new session. If this wasn't you, please review your security settings.`, 'low']
+      );
+    } catch (notificationError) {
+      console.error('Failed to create login notification:', notificationError);
+    }
 
     // Remove password from response
     delete user.password;

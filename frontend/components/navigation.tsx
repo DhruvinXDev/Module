@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, LogIn, UserPlus, Menu, Home, Info, User } from "lucide-react"
+import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -11,6 +11,12 @@ import { Switch } from "@/components/ui/switch";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
+  const [notificationKey, setNotificationKey] = React.useState(0)
+
+  // Force re-render of notification dropdown when notifications change
+  const handleNotificationChange = () => {
+    setNotificationKey(prev => prev + 1);
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
@@ -62,9 +68,13 @@ export function Navigation() {
             <a href="/profile" className="flex items-center justify-center rounded-full p-2 hover:bg-slate-100 transition-colors" title="Profile">
               <User className="h-5 w-5 text-slate-700 hover:text-blue-600" />
             </a>
+            {/* Notifications Page Link */}
+            {/* <a href="/notifications" className="flex items-center justify-center rounded-full p-2 hover:bg-slate-100 transition-colors" title="All Notifications">
+              <Bell className="h-5 w-5 text-slate-700 hover:text-blue-600" />
+            </a> */}
             {/* Theme Toggle */}
             <ThemeToggle />
-            <NotificationDropdown />
+            <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
 
             <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
@@ -130,12 +140,20 @@ export function Navigation() {
                       <Info className="h-5 w-5" />
                       <span>About</span>
                     </a>
+                    <a
+                      href="/notifications"
+                      className="flex items-center space-x-3 text-slate-700 hover:text-slate-900 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-slate-50"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Bell className="h-5 w-5" />
+                      <span>Notifications</span>
+                    </a>
                   </div>
 
                   {/* Mobile Notification */}
                   <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <span className="font-medium text-slate-700">Notifications</span>
-                    <NotificationDropdown />
+                    <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
                   </div>
 
                   {/* Mobile Auth Buttons */}
