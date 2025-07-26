@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, LogIn, UserPlus, Menu, Home, Info } from "lucide-react"
+import { Search, LogIn, UserPlus, Menu, Home, Info, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -58,6 +58,10 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2">
+            {/* Profile Icon */}
+            <a href="/profile" className="flex items-center justify-center rounded-full p-2 hover:bg-slate-100 transition-colors" title="Profile">
+              <User className="h-5 w-5 text-slate-700 hover:text-blue-600" />
+            </a>
             {/* Theme Toggle */}
             <ThemeToggle />
             <NotificationDropdown />
